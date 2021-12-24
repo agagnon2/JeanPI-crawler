@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "beeper": "^3.0.0",
+    "open": "^8.4.0"
+  },
+  "scripts": {
+    "nuke": "npm rm -fr ./node_modules & npm i"
+  }
+}
