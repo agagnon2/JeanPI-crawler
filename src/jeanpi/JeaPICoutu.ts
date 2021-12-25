@@ -13,6 +13,7 @@ const STORE_URL = `https://www.jeancoutu.com/StoreLocator/StoreLocator.svc/LoadS
 /**GLOBAL VARIABLES */
 let showOutcomeLogs = true;
 let showHttpLogs = false;
+let debugLogs = false;
 
 /** INTERFACES */
 interface AvailabilityInfo {
@@ -23,10 +24,9 @@ interface AvailabilityInfo {
   PreviousDateAvailable: boolean;
   NextDateAvailable: string;
 }
-interface StoreListObj {
+interface StoreListObj extends AvailabilityInfo {
   StoreId: string;
   AvailabilityDate: string;
-  Availabilityinfo: AvailabilityInfo;
 }
 
 interface RestStoreinfo {
@@ -42,6 +42,8 @@ interface StoreInfo extends RestStoreinfo {
 
 /**CONSTANT FUNCTION */
 const generateStoresArray = (start: number, end: number): number[] => {
+  if (debugLogs) console.log(`generate store from ${start} ${end}`);
+
   var numbers = [];
   for (var i = start; i <= end; i++) {
     numbers.push(i);
@@ -63,7 +65,12 @@ const getStoreWithAvailabilities = async () => {
     await fetchAvailabilities(
       generateStoresArray(cpt, cpt + MAX_STORE_PER_REQUEST - 1)
     ).then((res) => {
+      if (debugLogs) console.log(`fetch avail res = ${JSON.stringify(res)}`);
+
       res.forEach(async (storeAvailable) => {
+        if (debugLogs)
+          console.log(`fetch avail res = ${storeAvailable.StoreId}`);
+
         const storeInfo: RestStoreinfo = await getStoreinfo(
           storeAvailable.StoreId
         );
@@ -71,7 +78,7 @@ const getStoreWithAvailabilities = async () => {
         availableDict[storeAvailable.StoreId] = {
           id: storeAvailable.StoreId,
           ...storeInfo,
-          logs: storeAvailable.Availabilityinfo,
+          logs: storeAvailable,
         };
       });
     });
@@ -84,6 +91,8 @@ const getStoreWithAvailabilities = async () => {
 const fetchAvailabilities = async (
   stores: number[]
 ): Promise<StoreListObj[]> => {
+  if (debugLogs) console.log(`fetching stores ${JSON.stringify(stores)}`);
+
   let response = await axios.post(
     APPOINTMENTS_URL,
     {
@@ -101,26 +110,25 @@ const fetchAvailabilities = async (
 
     await response.data.Body?.ScheduleAvailabilities.forEach(
       (element: StoreListObj) => {
+        if (debugLogs)
+          console.log(
+            `scheduled availabilities returned ${JSON.stringify(element)}`
+          );
+
         if (
-          (element.AvailabilityDate != null &&
-            element.Availabilityinfo?.IsAvailableNightAndMorning) ||
-          element.Availabilityinfo?.IsAvailableAfterNoon ||
-          element.Availabilityinfo?.IsAvailableEvening
+          element.IsAvailableNightAndMorning ||
+          element?.IsAvailableAfterNoon ||
+          element?.IsAvailableEvening
         ) {
           storeAvailability.push({
             StoreId: element.StoreId,
             AvailabilityDate: element.AvailabilityDate,
-            Availabilityinfo: {
-              IsAvailableNightAndMorning:
-                element.Availabilityinfo?.IsAvailableNightAndMorning,
-              IsAvailableAfterNoon:
-                element.Availabilityinfo?.IsAvailableAfterNoon,
-              IsAvailableEvening: element.Availabilityinfo?.IsAvailableEvening,
-              AvailabilityTimes: element.Availabilityinfo?.AvailabilityTimes,
-              PreviousDateAvailable:
-                element.Availabilityinfo?.PreviousDateAvailable,
-              NextDateAvailable: element.Availabilityinfo?.NextDateAvailable,
-            },
+            IsAvailableNightAndMorning: element?.IsAvailableNightAndMorning,
+            IsAvailableAfterNoon: element?.IsAvailableAfterNoon,
+            IsAvailableEvening: element?.IsAvailableEvening,
+            AvailabilityTimes: element?.AvailabilityTimes,
+            PreviousDateAvailable: element?.PreviousDateAvailable,
+            NextDateAvailable: element?.NextDateAvailable,
           });
         }
       }
@@ -134,6 +142,8 @@ const fetchAvailabilities = async (
 
 const getStoreinfo = async (storeId: string): Promise<RestStoreinfo> => {
   try {
+    if (debugLogs) console.log(`getting store info for = ${storeId}}`);
+
     let response = await axios.post(
       STORE_URL,
       {
@@ -161,13 +171,7 @@ const getStoreinfo = async (storeId: string): Promise<RestStoreinfo> => {
 };
 
 /* MAIN */
-const getAllStores = (async (
-  _showOutcomeLogs = showOutcomeLogs,
-  _showHttpLogs = showHttpLogs
-) => {
-  showOutcomeLogs = _showOutcomeLogs;
-  showHttpLogs = _showHttpLogs;
-
+const getAllStores = (async () => {
   const timestamp1 = new Date();
   const storelist = await getStoreWithAvailabilities();
   const timestamp2 = new Date();
