@@ -25,3 +25,7 @@ _Notes : The react App is not yet connected to the backend app. This will come s
 ## Run the React app
 
 To run the react app, run `npm run start`
+
+## Screenshot
+![image](https://user-images.githubusercontent.com/73175206/147393378-5570496b-b381-445e-a74b-6e1577d116c1.png)
+
