@@ -102,12 +102,10 @@ const fetchAvailabilities = async (
     await response.data.Body?.ScheduleAvailabilities.forEach(
       (element: StoreListObj) => {
         if (
-          // (
-          element.AvailabilityDate != null
-          //    &&
-          //   element.Availabilityinfo?.IsAvailableNightAndMorning) ||
-          // element.Availabilityinfo?.IsAvailableAfterNoon ||
-          // element.Availabilityinfo?.IsAvailableEvening
+          (element.AvailabilityDate != null &&
+            element.Availabilityinfo?.IsAvailableNightAndMorning) ||
+          element.Availabilityinfo?.IsAvailableAfterNoon ||
+          element.Availabilityinfo?.IsAvailableEvening
         ) {
           storeAvailability.push({
             StoreId: element.StoreId,
