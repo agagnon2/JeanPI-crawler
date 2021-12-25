@@ -13,7 +13,7 @@ A scrapper to see in real time where covid test box are available accross Jean C
 
 # Run the App
 
-_Notes : The react App is not yet connected to the backend app. This will come shortly. TO run the code and get results in he CLI, follow the backend app setup_
+_Notes : The react App is not yet connected to the backend app. This will come shortly. To run the code and get results in the CLI, follow the backend app setup_
 
 ## Run the backend app
 
