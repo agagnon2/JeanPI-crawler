@@ -170,8 +170,7 @@ const getStoreinfo = async (storeId: string): Promise<RestStoreinfo> => {
   return Promise.resolve({} as RestStoreinfo);
 };
 
-/* MAIN */
-const getAllStores = (async () => {
+const getAllStores = async () => {
   const timestamp1 = new Date();
   const storelist = await getStoreWithAvailabilities();
   const timestamp2 = new Date();
@@ -189,6 +188,11 @@ const getAllStores = (async () => {
   }
 
   return storelist;
+};
+
+/** MAIN function for testing directly with ts-node*/
+(async () => {
+  await getAllStores();
 })();
 
 export const Jeanpi = {
