@@ -11,7 +11,7 @@ const APPOINTMENTS_URL = `https://www.jeancoutu.com/api/appointment/en/GetStoreS
 const STORE_URL = `https://www.jeancoutu.com/StoreLocator/StoreLocator.svc/LoadStoreServicesInfos`;
 
 /**GLOBAL VARIABLES */
-let showOutcomeLogs = true;
+let showOutcomeLogs = false;
 let showHttpLogs = false;
 let debugLogs = false;
 
